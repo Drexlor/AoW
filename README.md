@@ -25,6 +25,6 @@ and that can get you killed faster than a bullet through the head."
 Ejemplos
 ===========
 
-AoW.exe "Mundos Perdidos 5.0.exe"
-AoW.exe "ImperiumAO.exe"
-AoW.exe "HispanoAO.exe"
+* AoW.exe "Mundos Perdidos 5.0.exe"
+* AoW.exe "ImperiumAO.exe"
+* AoW.exe "HispanoAO.exe"

@@ -1,4 +1,4 @@
-Deficient
+AoW
 ===========
 
 "The beginnings of the hacker culture as we know it today can be conveniently dated to 1961, the year MIT acquired the first PDP-1."
@@ -21,3 +21,10 @@ not what they look like. My crime is that of outsmarting you, something that you
 
 "Out in the field, any connection with home just makes you weaker. It reminds you that you were once civilized, soft; 
 and that can get you killed faster than a bullet through the head."
+
+Ejemplos
+===========
+
+AoW.exe "Mundos Perdidos 5.0.exe"
+AoW.exe "ImperiumAO.exe"
+AoW.exe "HispanoAO.exe"

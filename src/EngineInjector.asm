@@ -132,6 +132,8 @@ GetProcessID:
 ;/// \brief Walk though the opcode table and fix
 ;///        reallocation table / jmp / call to memory
 ;///
+;/// NOTE: NEED REWORK FOR FUCK SAKE!!!!!!!!!!!!!!!!!!!!!
+;///
 ;/// \param oldAddress The old address
 ;/// \param address    The new address for the opcodes
 ;/// \param opcodes    The array of opcodes
@@ -159,9 +161,17 @@ ReallocateOpcode:
     CMP  AL, 0xA3
     JE   .ReallocateOpcode_Compare
 
+    ;// MOV EAX, DWORD PTR DS:[...]
+    CMP  AL, 0xA1
+    JE   .ReallocateOpcode_Compare
+
     ;// PUSH ...
     CMP  AL, 0x68
     JE   .ReallocateOpcode_Compare
+
+    ;// MOV ESI, DWORD PTR DS:[...]
+    CMP  AX, 0x358B
+    JE   .ReallocateOpcode_I2
 
     ;// POP DWORD PTR SS:[...]
     CMP  AX, 0x058F
@@ -175,6 +185,33 @@ ReallocateOpcode:
     CMP  AX, 0x15FF
     JE   .ReallocateOpcode_I2
 
+    ;// MUL BYTE PTR DS:[...]
+    CMP  AX, 0x25F6
+    JE   .ReallocateOpcode_I2
+
+    ;// CMP DWORD PTR DS:[...]
+    CMP  AX, 0x3D83
+    JE   .ReallocateOpcode_I2
+
+    ;// MOV BL, BYTE PTR DS:[...]
+    CMP  AX, 0x1D8A
+    JE   .ReallocateOpcode_I2
+
+    CMP  AX, 0x052B
+    JE   .ReallocateOpcode_I2
+
+    CMP  AX, 0x0503
+    JE   .ReallocateOpcode_I2
+    
+    CMP  AX, 0x1D2B
+    JE   .ReallocateOpcode_I2
+
+    CMP  AX, 0x1D03
+    JE   .ReallocateOpcode_I2
+
+    CMP  AX, 0x1D89
+    JE   .ReallocateOpcode_I2
+    
     CMP  ECX, 0x00
     JG   .ReallocateOpcode_Loop
 

@@ -470,10 +470,9 @@ WriteDetour:
 
 .WriteDetour_AllowWrite:
     LEA  EAX,  [EBP - 0x04]
-    
-    PUSH DWORD [EBP - 0x10]
-    PUSH 0x80
     PUSH EAX
+    PUSH 0x80
+    PUSH DWORD [EBP - 0x10]
     PUSH DWORD [EBP + 0x08]
     PUSH 0xFFFFFFFF
     CALL DWORD [VirtualProtectEx]

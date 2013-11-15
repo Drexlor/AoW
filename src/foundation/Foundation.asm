@@ -9,7 +9,10 @@
     ;////////////////////////////////////////////////////
     %include 'src/foundation/Foundation_Module_Speedhack.asm'
 
-__oldFunction DD 0
+;////////////////////////////////////////////////////
+;///!< The original callback
+;////////////////////////////////////////////////////
+__fRealSendData          DD 0x00000000
 
 ;////////////////////////////////////////////////////
 ;/// \brief Initialize foundation enviroment
@@ -21,68 +24,40 @@ InitializeFoundation:
     ;////////////////////////////////////////////////////
     ;/// Initialize SpeedHACK module
     ;////////////////////////////////////////////////////
-    ;CALL InitializeSpeedhackModule
-
-    ;//////////// MPAO => Logger de paquetes sin encriptacion :) 
-    PUSH MyFunction
+    CALL InitializeSpeedhackModule
+    
+    ;////////////////////////////////////////////////
+    ;/// Redirect "SendData" for our function
+    ;////////////////////////////////////////////////
+    PUSH MySendData
     PUSH 0x005878A0
     CALL WriteDetour
-
-    PUSH 0x005878A0
-    CALL GetDetour
-    MOV  EAX, DWORD [EAX + 0x04]
-    MOV  DWORD [__oldFunction], EAX
+    MOV  DWORD [__fRealSendData], EAX
+    
+    ;////////////////////////////////////////////////
+    ;/// Redirect "HandleData" for our function
+    ;////////////////////////////////////////////////
+    ; <TODO>
 
     MOV  ESP, EBP
     POP  EBP
     RET
 
-MyFunction:
+;////////////////////////////////////////////////////
+;/// \brief Send data to the server
+;///
+;/// \param ????
+;/// \param ????
+;////////////////////////////////////////////////////
+MySendData:
     PUSH EBP
     MOV  EBP, ESP
-    SUB  ESP, 0x04
 
-    PUSH ESI
-
-    PUSH DWORD [EBP + 0x08]
-    CALL ConvertUnicodeToString
-    MOV  ESI, EAX
-
-    CMP  WORD [ESI], 0x3737
-    JE   .TimeFor1000Magic
-
-    ;// La encriptacion me la paso por los huevos :D
-    ;PUSH ESI
-    ;MOV  ESI, EAX
-    ;PUSH EAX
-    ;CALL DWORD [OutputDebugStringA] 
-
+    ;// Execute the real callback
     PUSH DWORD [EBP + 0x0C]
     PUSH DWORD [EBP + 0x08]
-    CALL DWORD [__oldFunction]
-    JMP  .Finish
+    CALL DWORD [__fRealSendData] 
 
-.TimeFor1000Magic:
-    PUSH DWORD [EBP + 0x0C]
-    PUSH DWORD [EBP + 0x08]
-    CALL DWORD [__oldFunction]
-    PUSH DWORD [EBP + 0x0C]
-    PUSH DWORD [EBP + 0x08]
-    CALL DWORD [__oldFunction]
-    PUSH DWORD [EBP + 0x0C]
-    PUSH DWORD [EBP + 0x08]
-    CALL DWORD [__oldFunction]
-    PUSH DWORD [EBP + 0x0C]
-    PUSH DWORD [EBP + 0x08]
-    CALL DWORD [__oldFunction]
-    PUSH DWORD [EBP + 0x0C]
-    PUSH DWORD [EBP + 0x08]
-    CALL DWORD [__oldFunction]
-.Finish:
-    DeallocateMemory ESI
-
-    POP  ESI
-    
     MOV  ESP, EBP
     POP  EBP
     RET  0x08

@@ -517,6 +517,7 @@ WriteDetour:
     POP  DWORD [EAX + 0x00]
 
     PUSH DWORD [EBP - 0x0C]
+    PUSH DWORD [EBP - 0x0C]
     POP  DWORD [EAX + 0x04]
 
     PUSH DWORD [EBP - 0x10]
@@ -534,6 +535,7 @@ WriteDetour:
     CALL DWORD [VirtualProtectEx]
 
 .WriteDetour_Exit:
+    POP  EAX
     POP  EBX
 
     MOV  ESP, EBP

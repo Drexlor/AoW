@@ -12,6 +12,8 @@ __dwRealGetTickCount            DD 0x00000000
 __dwFakeGetTickCount            DD 0x00000000
 __dwRealQueryPerfomanceCounter  DD 0x00000000
 __dwFakeQueryPerfomanceCounter  DD 0x00000000
+__fRealGetTickCount             DD 0x00000000
+__fRealQueryPerfomanceCounter   DD 0x00000000
 
 ;////////////////////////////////////////////////////
 ;/// \brief Initialize speedhack module
@@ -26,13 +28,15 @@ InitializeSpeedhackModule:
     PUSH MyGetTickCount
     PUSH DWORD [GetTickCount]
     CALL WriteDetour
-    
+    MOV  DWORD [__fRealGetTickCount], EAX
+
     ;////////////////////////////////////////////////
     ;/// Redirect "QueryPerformanceCounter" for speedhack
     ;////////////////////////////////////////////////
     PUSH MyQueryPerformanceCounter
     PUSH DWORD [QueryPerformanceCounter]
     CALL WriteDetour
+    MOV  DWORD [__fRealQueryPerfomanceCounter], EAX
 
     MOV  ESP, EBP
     POP  EBP
@@ -50,9 +54,7 @@ MyGetTickCount:
     ;////////////////////////////////////////////////
     ;/// Call real function
     ;////////////////////////////////////////////////
-    PUSH DWORD [GetTickCount]
-    CALL GetDetour
-    CALL DWORD [EAX + 0x04]
+    CALL DWORD [__fRealGetTickCount]
     PUSH EAX
 
     ;////////////////////////////////////////////////
@@ -95,10 +97,8 @@ MyQueryPerformanceCounter:
     ;////////////////////////////////////////////////
     ;/// Call real function
     ;////////////////////////////////////////////////
-    PUSH DWORD [QueryPerformanceCounter]
-    CALL GetDetour
     PUSH DWORD [EBP + 0x08]
-    CALL DWORD [EAX + 0x04]
+    CALL DWORD [__fRealQueryPerfomanceCounter]
     MOV  EBX, DWORD [EBP + 0x08]
 
     ;////////////////////////////////////////////////

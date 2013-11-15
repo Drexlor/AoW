@@ -54,7 +54,7 @@ ParseCommandLine:
     MOV  ESP, EBP
     POP  EBP
     RET  0x04
-    
+
 ;////////////////////////////////////////////////////////
 ;/// \brief Return a thread of the given process
 ;///
@@ -261,6 +261,9 @@ ReallocateOpcode:
     JE   .ReallocateOpcode_I2
 
     CMP  AX, 0x1D89
+    JE   .ReallocateOpcode_I2
+    
+    CMP  AX, 0x0501
     JE   .ReallocateOpcode_I2
     
     CMP  ECX, 0x00

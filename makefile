@@ -7,7 +7,7 @@ build: Release
 
 # Compile the file
 Release: src/EngineEntry.asm
-	nasm -dMPAO -f win32 -o debug/aow.obj src/EngineEntry.asm
+	nasm -dFND_HISPANO -f win32 -o debug/aow.obj src/EngineEntry.asm
 	ld --omagic -e _EngineEntry -o debug/aow.exe debug/aow.obj
 	strip debug/aow.exe
 	

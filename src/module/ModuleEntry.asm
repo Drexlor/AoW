@@ -12,8 +12,10 @@
     ;////////////////////////////////////////////////////
     ;/// Define foundation
     ;////////////////////////////////////////////////////
-    %ifdef MPAO
+    %ifdef FND_MUNDOS_PERDIDOS
         %include 'src/foundation/MundosPerdidosAO/Foundation.asm'
+    %elif defined(FND_HISPANO)
+        %include 'src/foundation/HispanoAO/Foundation.asm'
     %endif
 
 ;////////////////////////////////////////////////////

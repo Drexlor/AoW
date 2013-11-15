@@ -666,3 +666,109 @@ BacktraceFunction:
     MOV  ESP, EBP
     POP  EBP
     RET  0x04
+
+;////////////////////////////////////////////////////////
+;/// \brief Compare a buffer with the given pattern and
+;///        mask.
+;///
+;/// \param buffer  The buffer that holds the bytes
+;/// \param pattern The patter for the comparition
+;/// \param mask    The mask of the pattern
+;///
+;/// \return True if the memory is the same
+;////////////////////////////////////////////////////////
+CompareMemory:
+    PUSH EBP
+    MOV  EBP, ESP
+
+    PUSH ESI
+    PUSH EDI
+
+    MOV  EBX, DWORD [EBP + 0x08]
+    MOV  ESI, DWORD [EBP + 0x0C]
+    MOV  EDI, DWORD [EBP + 0x10]
+
+.CompareMemory_Loop:
+    LODSB
+
+    ; Check if we reach the end of the string
+    TEST AL, AL
+    JZ   .CompareMemory_Found
+
+    ; Check if we need to continue
+    CMP  AL, 'x'
+    JNE  .CompareMemory_Continue
+
+    ; Compare bytes
+    MOV  AH, BYTE [EDI]
+    CMP  AH, BYTE [EBX]
+    JNE  .CompareMemory_NotFound
+
+.CompareMemory_Continue:
+    INC  EDI
+    INC  EBX
+    JMP  .CompareMemory_Loop
+
+.CompareMemory_NotFound:
+    XOR  EAX, EAX
+    JMP  .CompareMemory_End
+
+.CompareMemory_Found:
+    MOV  EAX, 0x01
+
+.CompareMemory_End:
+    POP  EDI
+    POP  ESI
+
+    MOV  ESP, EBP
+    POP  EBP
+    RET  0x0C
+    
+;////////////////////////////////////////////////////////
+;/// \brief Find a pattern from the start of an offset
+;///
+;/// \param offset  The offset in memory to start
+;/// \param size    The size of the search
+;/// \param pattern The patter for the compare
+;/// \param mask    The mask of the pattern
+;///
+;/// \return The offset within the start of the pattern
+;////////////////////////////////////////////////////////
+FindMemory:    
+    PUSH EBP
+    MOV  EBP, ESP
+
+    PUSH ESI
+
+    MOV  ESI, DWORD [EBP + 0x08]
+    XOR  ECX, ECX
+
+.FindMemory_Loop:
+    PUSH DWORD [EBP + 0x14]
+    PUSH DWORD [EBP + 0x10]
+    PUSH ESI
+    CALL CompareMemory
+
+    TEST EAX, EAX
+    JNZ  .FindMemory_Found
+
+    CMP  ECX, DWORD [EBP + 0x0C]
+    JE   .FindMemory_NotFound
+
+    INC  ESI
+    INC  ECX
+    JMP  .FindMemory_Loop
+
+.FindMemory_NotFound:
+    XOR  EAX, EAX
+    JMP  .FindMemory_End
+
+.FindMemory_Found:
+    MOV  EAX, ESI
+
+.FindMemory_End:
+    POP  ESI
+
+    MOV  ESP, EBP
+    POP  EBP
+    RET  0x14

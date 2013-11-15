@@ -30,9 +30,9 @@ InitializeSpeedhackModule:
     ;////////////////////////////////////////////////
     ;/// Redirect "QueryPerformanceCounter" for speedhack
     ;////////////////////////////////////////////////
-    ;PUSH MyQueryPerformanceCounter
-    ;PUSH DWORD [QueryPerformanceCounter]
-    ;CALL WriteDetour
+    PUSH MyQueryPerformanceCounter
+    PUSH DWORD [QueryPerformanceCounter]
+    CALL WriteDetour
 
     MOV  ESP, EBP
     POP  EBP

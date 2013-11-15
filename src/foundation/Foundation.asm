@@ -9,6 +9,8 @@
     ;////////////////////////////////////////////////////
     %include 'src/foundation/Foundation_Module_Speedhack.asm'
 
+__oldFunction DD 0
+
 ;////////////////////////////////////////////////////
 ;/// \brief Initialize foundation enviroment
 ;////////////////////////////////////////////////////
@@ -19,13 +21,17 @@ InitializeFoundation:
     ;////////////////////////////////////////////////////
     ;/// Initialize SpeedHACK module
     ;////////////////////////////////////////////////////
-    CALL InitializeSpeedhackModule
+    ;CALL InitializeSpeedhackModule
 
     ;//////////// MPAO => Logger de paquetes sin encriptacion :) 
     PUSH MyFunction
     PUSH 0x005878A0
     CALL WriteDetour
 
+    PUSH 0x005878A0
+    CALL GetDetour
+    MOV  EAX, DWORD [EAX + 0x04]
+    MOV  DWORD [__oldFunction], EAX
 
     MOV  ESP, EBP
     POP  EBP
@@ -36,20 +42,47 @@ MyFunction:
     MOV  EBP, ESP
     SUB  ESP, 0x04
 
-    ;// La encriptacion me la paso por los huevos :D
+    PUSH ESI
+
     PUSH DWORD [EBP + 0x08]
     CALL ConvertUnicodeToString
     MOV  ESI, EAX
-    PUSH EAX
-    CALL DWORD [OutputDebugStringA] 
-    DeallocateMemory ESI
 
-    PUSH 0x005878A0
-    CALL GetDetour
+    CMP  WORD [ESI], 0x3737
+    JE   .TimeFor1000Magic
+
+    ;// La encriptacion me la paso por los huevos :D
+    ;PUSH ESI
+    ;MOV  ESI, EAX
+    ;PUSH EAX
+    ;CALL DWORD [OutputDebugStringA] 
+
     PUSH DWORD [EBP + 0x0C]
     PUSH DWORD [EBP + 0x08]
-    CALL DWORD [EAX + 0x04]
+    CALL DWORD [__oldFunction]
+    JMP  .Finish
 
+.TimeFor1000Magic:
+    PUSH DWORD [EBP + 0x0C]
+    PUSH DWORD [EBP + 0x08]
+    CALL DWORD [__oldFunction]
+    PUSH DWORD [EBP + 0x0C]
+    PUSH DWORD [EBP + 0x08]
+    CALL DWORD [__oldFunction]
+    PUSH DWORD [EBP + 0x0C]
+    PUSH DWORD [EBP + 0x08]
+    CALL DWORD [__oldFunction]
+    PUSH DWORD [EBP + 0x0C]
+    PUSH DWORD [EBP + 0x08]
+    CALL DWORD [__oldFunction]
+    PUSH DWORD [EBP + 0x0C]
+    PUSH DWORD [EBP + 0x08]
+    CALL DWORD [__oldFunction]
+.Finish:
+    DeallocateMemory ESI
+
+    POP  ESI
+    
     MOV  ESP, EBP
     POP  EBP
     RET  0x08

@@ -4,6 +4,57 @@
 ;//////////////////////////////////////////////////////////////////////
 [SEGMENT .text]
 
+;////////////////////////////////////////////////////
+;/// \brief Return the next command line
+;///
+;/// \param string The string where to look at
+;///
+;/// \return The CString of the command
+;////////////////////////////////////////////////////
+ParseCommandLine:
+    PUSH EBP
+    MOV  EBP, ESP
+
+    CALL DWORD [GetCommandLineA]
+    MOV  ESI, EAX
+
+    PUSH ESI
+    CALL DWORD [lstrlenA]
+    ADD  ESI, EAX
+    XOR  EBX, EBX
+    
+.GetNextCommandLine_Compare:
+    CMP  BYTE [ESI], ' '
+    JE   .GetNextCommandLine_Found_Space
+
+    CMP  BYTE [ESI], 0x22
+    JNE  .GetNextCommandLine_Continue
+
+.GetNextCommandLine_Found_Delimiter:
+    TEST EBX, EBX
+    JNZ  .GetNextCommandLine_Found_String
+    INC  EBX
+    MOV  BYTE [ESI], 0x00
+
+.GetNextCommandLine_Continue:
+    DEC  ESI
+    DEC  EAX
+    TEST EAX, EAX
+    JNZ  .GetNextCommandLine_Compare
+
+.GetNextCommandLine_Found_Space:
+    TEST EBX, EBX
+    JNZ  .GetNextCommandLine_Continue
+
+.GetNextCommandLine_Found_String:
+    MOV  BYTE [ESI], 0x00
+    INC  ESI
+    MOV  EAX, ESI
+
+    MOV  ESP, EBP
+    POP  EBP
+    RET  0x04
+    
 ;////////////////////////////////////////////////////////
 ;/// \brief Return a thread of the given process
 ;///

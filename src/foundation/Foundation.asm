@@ -13,6 +13,32 @@
 ;///!< The original callback
 ;////////////////////////////////////////////////////
 __fRealSendData          DD 0x00000000
+__fSendDataMask          DB 0x89, 0x5D, 0xDC 
+                         DB 0x89, 0x5D, 0xD8
+                         DB 0x89, 0x5D, 0xD4
+                         DB 0x89, 0x5D, 0xD0
+                         DB 0x89, 0x5D, 0xCC
+                         DB 0x89, 0x5D, 0xC8
+                         DB 0x89, 0x5D, 0xC4
+                         DB 0x89, 0x5D, 0xC0
+                         DB 0x89, 0x5D, 0xB0
+                         DB 0x89, 0x5D, 0xA0
+                         DB 0x89, 0x5D, 0x90
+                         DB 0x89, 0x5D, 0x80                         
+                         DB 0x00
+__fSendDataPattern       DB "xxx" 
+                         DB "xxx" 
+                         DB "xxx"
+                         DB "xxx"
+                         DB "xxx"
+                         DB "xxx"
+                         DB "xxx" 
+                         DB "xxx" 
+                         DB "xxx"
+                         DB "xxx"
+                         DB "xxx"
+                         DB "xxx"
+                         DB 0x00
 
 ;////////////////////////////////////////////////////
 ;/// \brief Initialize foundation enviroment
@@ -29,8 +55,17 @@ InitializeFoundation:
     ;////////////////////////////////////////////////
     ;/// Redirect "SendData" for our function
     ;////////////////////////////////////////////////
+    PUSH __fSendDataMask
+    PUSH __fSendDataPattern
+    PUSH 0x00200000
+    PUSH 0x00500000
+    CALL FindMemory
+    
+    PUSH EAX
+    CALL BacktraceFunction
+
     PUSH MySendData
-    PUSH 0x005878A0
+    PUSH EAX
     CALL WriteDetour
     MOV  DWORD [__fRealSendData], EAX
     

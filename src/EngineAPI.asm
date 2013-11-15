@@ -12,6 +12,7 @@ __Table_Kernel32DLL_Begin:
     CreateToolhelp32Snapshot:   DD 0xE454DFED
     ExitProcess:                DD 0x73E2D87E
     GetCommandLineA             DD 0x36EF7370
+    GetCurrentProcess:          DD 0x7B8F17E6
     GetThreadContext:           DD 0x68A7C7D2
     GetTickCount:               DD 0xF791FB23
     GetProcAddress:             DD 0x7C0DFCAA
@@ -88,7 +89,7 @@ InitializeEnviroment:
     ;/// Creates heap for our local application
     ;////////////////////////////////////////////////////
     PUSH 0x00020000                    ;// EXPAND:  1MB
-    PUSH 0x00001000                    ;// INITIAL: 4KB
+    PUSH 0x00020000                    ;// INITIAL: 4KB
     PUSH 0x00040000                    ;// HEAP_CREATE_ENABLE_EXECUTE
     CALL DWORD [HeapCreate]            
     MOV  DWORD [__pHeap], EAX

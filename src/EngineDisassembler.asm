@@ -644,11 +644,11 @@ BacktraceFunction:
 
 .BacktraceFunction_Loop:
     MOV  BL, BYTE [EAX]
-    CMP  BL, 0xE5
+    CMP  BL, 0xEC
     JNE  .BacktraceFunction_Continue
 
     MOV  BL, BYTE [EAX - 0x01]
-    CMP  BL, 0x89
+    CMP  BL, 0x8B
     JNE  .BacktraceFunction_Continue
 
     MOV  BL, BYTE [EAX - 0x02]

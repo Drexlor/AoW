@@ -7,7 +7,7 @@
 ;////////////////////////////////////////////////////
 ;///!< The multiply of the speedhack
 ;////////////////////////////////////////////////////
-__dwMultiplier                  DB 0x50
+__dwMultiplier                  DW 0x0150
 __dwRealGetTickCount            DD 0x00000000
 __dwFakeGetTickCount            DD 0x00000000
 __dwRealQueryPerfomanceCounter  DD 0x00000000
@@ -72,7 +72,7 @@ MyGetTickCount:
     ;////////////////////////////////////////////////
     SUB  EAX, DWORD [__dwRealGetTickCount]
     MOV  DWORD [EBP - 0x04], EAX
-    MUL  BYTE [__dwMultiplier]
+    MUL  WORD [__dwMultiplier]
 
     ADD  EAX, DWORD [__dwFakeGetTickCount]
     MOV  DWORD [__dwFakeGetTickCount], EAX
@@ -110,20 +110,20 @@ MyQueryPerformanceCounter:
     ;/// Check if we can hook it NOW
     ;////////////////////////////////////////////////
     CMP  DWORD [__dwFakeQueryPerfomanceCounter], 0x00000000
-    JNZ  .MyGetTickCount_Continue
+    JNZ  .MyQueryPerformanceCounter_Continue
 
     MOV  EAX, DWORD [EBX + 0x00]
     MOV  DWORD [__dwFakeQueryPerfomanceCounter], EAX
-    JMP  .MyGetTickCount_Finish
+    JMP  .MyQueryPerformanceCounter_Finish
 
-.MyGetTickCount_Continue:
+.MyQueryPerformanceCounter_Continue:
     ;////////////////////////////////////////////////
     ;/// Calculate the distance real value
     ;////////////////////////////////////////////////
     MOV  EAX, DWORD [EBX + 0x00]
     SUB  EAX, DWORD [__dwRealQueryPerfomanceCounter]
     MOV  DWORD [EBP - 0x04], EAX
-    MUL  BYTE [__dwMultiplier]
+    MUL  WORD [__dwMultiplier]
 
     ADD  EAX, DWORD [__dwFakeQueryPerfomanceCounter]
     MOV  DWORD [__dwFakeQueryPerfomanceCounter], EAX
@@ -133,7 +133,7 @@ MyQueryPerformanceCounter:
     ADD  DWORD [__dwRealQueryPerfomanceCounter], EAX
     MOV  EAX, 0x01
 
-.MyGetTickCount_Finish:
+.MyQueryPerformanceCounter_Finish:
     POP  EBX
 
     MOV  ESP, EBP

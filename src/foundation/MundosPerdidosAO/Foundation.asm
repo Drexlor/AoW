@@ -4,11 +4,6 @@
 ;//////////////////////////////////////////////////////////////////////
 [SEGMENT .text]
 
-    ;////////////////////////////////////////////////////
-    ;/// Define all modules includes
-    ;////////////////////////////////////////////////////
-    %include 'src/foundation/Foundation_Module_Speedhack.asm'
-
 ;////////////////////////////////////////////////////
 ;///!< The original callback
 ;////////////////////////////////////////////////////
@@ -47,27 +42,22 @@ InitializeFoundation:
     PUSH EBP
     MOV  EBP, ESP
     
-    ;////////////////////////////////////////////////////
-    ;/// Initialize SpeedHACK module
-    ;////////////////////////////////////////////////////
-    CALL InitializeSpeedhackModule
-
     ;////////////////////////////////////////////////
     ;/// Redirect "SendData" for our function
     ;////////////////////////////////////////////////
-    ;PUSH __fSendDataMask
-    ;PUSH __fSendDataPattern
-    ;PUSH 0x00200000
-    ;PUSH 0x00500000
-    ;CALL FindMemory
+    PUSH __fSendDataMask
+    PUSH __fSendDataPattern
+    PUSH 0x00200000
+    PUSH 0x00500000
+    CALL FindMemory
     
-    ;PUSH EAX
-    ;CALL BacktraceFunction
+    PUSH EAX
+    CALL BacktraceFunction
 
-    ;PUSH MySendData
-    ;PUSH EAX
-    ;CALL WriteDetour
-    ;MOV  DWORD [__fRealSendData], EAX
+    PUSH MySendData
+    PUSH EAX
+    CALL WriteDetour
+    MOV  DWORD [__fRealSendData], EAX
     
     ;////////////////////////////////////////////////
     ;/// Redirect "HandleData" for our function

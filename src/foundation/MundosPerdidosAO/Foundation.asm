@@ -54,7 +54,7 @@ InitializeFoundation:
     PUSH EAX
     CALL BacktraceFunction
 
-    PUSH MySendData
+    PUSH BridgeSendData
     PUSH EAX
     CALL WriteDetour
     MOV  DWORD [__fRealSendData], EAX
@@ -74,9 +74,13 @@ InitializeFoundation:
 ;/// \param ????
 ;/// \param ????
 ;////////////////////////////////////////////////////
-MySendData:
+BridgeSendData:
     PUSH EBP
     MOV  EBP, ESP
+
+    ;// Execute our dispatcher
+    PUSH DWORD [EBP + 0x0C]
+    CALL HandleOutgoingData
 
     ;// Execute the real callback
     PUSH DWORD [EBP + 0x0C]

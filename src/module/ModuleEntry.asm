@@ -38,3 +38,29 @@ InitializeModule:
     MOV  ESP, EBP
     POP  EBP
     RET
+
+;////////////////////////////////////////////////////
+;/// \brief Send data to the server
+;///
+;/// \param sndData The data to send to the server
+;////////////////////////////////////////////////////
+HandleOutgoingData:
+    PUSH EBP
+    MOV  EBP, ESP
+
+    MOV  ESP, EBP
+    POP  EBP
+    RET  0x04
+
+;////////////////////////////////////////////////////
+;/// \brief Handle data from the server
+;///
+;/// \param data The data recived from the server
+;////////////////////////////////////////////////////
+HandleIncommingData:
+    PUSH EBP
+    MOV  EBP, ESP
+
+    MOV  ESP, EBP
+    POP  EBP
+    RET  0x04

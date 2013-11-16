@@ -70,7 +70,7 @@ InitializeFoundation:
     PUSH 0x00500000
     CALL FindMemory
 
-    PUSH MySocketReadJump
+    PUSH MyHandleDataRedirect
     PUSH EAX
     CALL WriteDetour
     MOV  DWORD [__fHandleDataCallReturn], EAX
@@ -78,12 +78,11 @@ InitializeFoundation:
     MOV  ESP, EBP
     POP  EBP
     RET
-
+    
 ;////////////////////////////////////////////////////
 ;/// \brief Handle code inside Socket1_Read(.., ..)
 ;////////////////////////////////////////////////////
-MySocketReadJump:
-    ;// DWORD [EBP - 0x0C] = Data descrypted
-
-    ;// Jump the left code
+MyHandleDataRedirect:
+    PUSH DWORD [EBP - 0x0C]
+    CALL HandleIncommingData
     JMP  __fHandleDataCallReturn

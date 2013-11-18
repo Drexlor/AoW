@@ -5,9 +5,8 @@
 [SEGMENT .text]
 
 ;////////////////////////////////////////////////////
-;///!< The original callback
+;///!< The original SendData callback
 ;////////////////////////////////////////////////////
-__fRealHandleData        DD 0x00000000
 __fRealSendData          DD 0x00000000
 __fSendDataMask          DB 0x89, 0x5D, 0xDC 
                          DB 0x89, 0x5D, 0xD8
@@ -37,6 +36,29 @@ __fSendDataPattern       DB "xxx"
                          DB 0x00
 
 ;////////////////////////////////////////////////////
+;///!< The original HandleData callback
+;////////////////////////////////////////////////////
+__fRealHandleData        DD 0x00000000
+__fHandleDataMask        DB 0x51
+                         DB 0x68, 0x90, 0x90, 0x90, 0x90
+                         DB 0xFF, 0x15, 0x90, 0x90, 0x90, 0x90
+                         DB 0x85, 0xC0
+                         DB 0x0F, 0x85, 0x90, 0x90, 0x90, 0x90
+                         DB 0xC7, 0x45, 0xFC, 0x90, 0x90, 0x90, 0x90
+                         DB 0x6A, 0x01
+                         DB 0xE8, 0x90, 0x90, 0x90, 0x90
+                         DB 0x00
+__fHandleDataPattern     DB "x" 
+                         DB "x????" 
+                         DB "xx????"
+                         DB "xx"
+                         DB "xx????"
+                         DB "xxx????"
+                         DB "xx"
+                         DB "x????"
+                         DB 0x00
+
+;////////////////////////////////////////////////////
 ;/// \brief Initialize foundation enviroment
 ;////////////////////////////////////////////////////
 InitializeFoundation:
@@ -63,8 +85,17 @@ InitializeFoundation:
     ;////////////////////////////////////////////////
     ;/// Redirect "HandleData" for our function
     ;////////////////////////////////////////////////
+    PUSH __fHandleDataMask
+    PUSH __fHandleDataPattern
+    PUSH 0x00200000
+    PUSH 0x00500000
+    CALL FindMemory
+    
+    PUSH EAX
+    CALL BacktraceFunction
+
     PUSH BridgeHandleData
-    PUSH 0x00544F50
+    PUSH EAX
     CALL WriteDetour
     MOV  DWORD [__fRealHandleData], EAX
 

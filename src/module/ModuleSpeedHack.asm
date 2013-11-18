@@ -7,7 +7,7 @@
 ;////////////////////////////////////////////////////
 ;///!< The multiply of the speedhack
 ;////////////////////////////////////////////////////
-__dwMultiplier                  DW 0x0150
+__dwMultiplier                  DB 0x50
 __dwRealGetTickCount            DD 0x00000000
 __dwFakeGetTickCount            DD 0x00000000
 __dwRealQueryPerfomanceCounter  DD 0x00000000
@@ -72,7 +72,7 @@ MyGetTickCount:
     ;////////////////////////////////////////////////
     SUB  EAX, DWORD [__dwRealGetTickCount]
     MOV  DWORD [EBP - 0x04], EAX
-    MUL  WORD [__dwMultiplier]
+    MUL  BYTE [__dwMultiplier]
 
     ADD  EAX, DWORD [__dwFakeGetTickCount]
     MOV  DWORD [__dwFakeGetTickCount], EAX
@@ -123,7 +123,7 @@ MyQueryPerformanceCounter:
     MOV  EAX, DWORD [EBX + 0x00]
     SUB  EAX, DWORD [__dwRealQueryPerfomanceCounter]
     MOV  DWORD [EBP - 0x04], EAX
-    MUL  WORD [__dwMultiplier]
+    MUL  BYTE [__dwMultiplier]
 
     ADD  EAX, DWORD [__dwFakeQueryPerfomanceCounter]
     MOV  DWORD [__dwFakeQueryPerfomanceCounter], EAX

@@ -65,7 +65,6 @@ InitializeFoundation:
     ;////////////////////////////////////////////////
     ; <TODO>
 
-
     MOV  ESP, EBP
     POP  EBP
     RET

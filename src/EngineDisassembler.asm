@@ -38,7 +38,9 @@ InitializeDisassembler:
     PUSH EBP
     MOV  EBP, ESP
 
-    AllocateMemory (HOOK_LENGTH * 0x04)
+    PUSH (HOOK_LENGTH * 0x04)
+    PUSH 0x0040
+    CALL DWORD [LocalAlloc]
     MOV  DWORD [__ppHookList], EAX
     
     MOV  ESP, EBP
@@ -481,7 +483,9 @@ WriteDetour:
     MOV  EAX, DWORD [EBP - 0x10]
     ADD  EAX, 0x06
     
-    AllocateMemory EAX
+    PUSH EAX
+    PUSH 0x0040
+    CALL DWORD [LocalAlloc]
     MOV  DWORD [EBP - 0x0C], EAX
 
     ;// Write Overwritten bytes
@@ -511,7 +515,9 @@ WriteDetour:
     CALL WriteJump
 
 .WriteDetour_AddDetour:
-    AllocateMemory 0x0C
+    PUSH 0x0C
+    PUSH 0x0040
+    CALL DWORD [LocalAlloc]
 
     PUSH DWORD [EBP + 0x08]
     POP  DWORD [EAX + 0x00]
@@ -578,7 +584,9 @@ RemoveDetour:
     PUSH DWORD [EBX + 0x04]
     PUSH DWORD [EBX + 0x00]
     CALL CopyMemory
-    DeallocateMemory EBX
+
+    PUSH EBX
+    CALL DWORD [LocalFree]
 
 .RemoveDetour_Clean:
     POP  EDX
@@ -612,7 +620,9 @@ RemoveAllDetour:
     PUSH DWORD [EBX + 0x04]
     PUSH DWORD [EBX + 0x00]
     CALL CopyMemory
-    DeallocateMemory EBX
+
+    PUSH EBX
+    CALL DWORD [LocalFree]
 
 .RemoveAllDetour_Continue:
     ADD  EAX, 0x04

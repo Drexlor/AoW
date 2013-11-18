@@ -5,6 +5,7 @@
 [SEGMENT .text]
 
 ;////////////////////////////////////////////////////
-;///!< Default filename
+;///!< The cooldown for the potion
 ;////////////////////////////////////////////////////
-__szFilename DB "HispanoAO.exe", 0x00
+__dwPotionCooldown        DW __dwFoundationPotionCooldown
+__ddPotionLastCooldown    DD 0x00000000

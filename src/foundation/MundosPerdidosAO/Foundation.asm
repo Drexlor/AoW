@@ -7,6 +7,7 @@
 ;////////////////////////////////////////////////////
 ;///!< The original callback
 ;////////////////////////////////////////////////////
+__fRealHandleData        DD 0x00000000
 __fRealSendData          DD 0x00000000
 __fSendDataMask          DB 0x89, 0x5D, 0xDC 
                          DB 0x89, 0x5D, 0xD8
@@ -58,12 +59,14 @@ InitializeFoundation:
     PUSH EAX
     CALL WriteDetour
     MOV  DWORD [__fRealSendData], EAX
-    
 
     ;////////////////////////////////////////////////
     ;/// Redirect "HandleData" for our function
     ;////////////////////////////////////////////////
-    ; <TODO>
+    PUSH BridgeHandleData
+    PUSH 0x00544F50
+    CALL WriteDetour
+    MOV  DWORD [__fRealHandleData], EAX
 
     MOV  ESP, EBP
     POP  EBP
@@ -79,15 +82,67 @@ BridgeSendData:
     PUSH EBP
     MOV  EBP, ESP
 
-    ;// Execute our dispatcher
-    PUSH DWORD [EBP + 0x0C]
-    CALL HandleOutgoingData
+    PUSHAD
 
-    ;// Execute the real callback
+    ;////////////////////////////////////////////////////
+    ;/// Execute engine dispatcher
+    ;////////////////////////////////////////////////////
+    PUSH DWORD [EBP + 0x08]
+    CALL ConvertUnicodeToString
+    MOV  ESI, EAX
+
+    PUSH EAX
+    CALL HandleOutgoingData
+    
+    PUSH ESI
+    CALL DWORD [LocalFree]
+
+    ;////////////////////////////////////////////////////
+    ;/// Execute client dispatcher
+    ;////////////////////////////////////////////////////
     PUSH DWORD [EBP + 0x0C]
     PUSH DWORD [EBP + 0x08]
     CALL DWORD [__fRealSendData] 
 
+    POPAD
+    
     MOV  ESP, EBP
     POP  EBP
     RET  0x08
+
+
+;////////////////////////////////////////////////////
+;/// \brief Handle data from the server
+;///
+;/// \param ????
+;////////////////////////////////////////////////////
+BridgeHandleData:
+    PUSH EBP
+    MOV  EBP, ESP
+
+    PUSHAD
+
+    ;////////////////////////////////////////////////////
+    ;/// Execute engine dispatcher
+    ;////////////////////////////////////////////////////
+    PUSH DWORD [EBP + 0x08]
+    CALL ConvertUnicodeToString
+    MOV  ESI, EAX
+
+    PUSH EAX
+    CALL HandleIncommingData
+    
+    PUSH ESI
+    CALL DWORD [LocalFree]
+
+    ;////////////////////////////////////////////////////
+    ;/// Execute client dispatcher
+    ;////////////////////////////////////////////////////
+    PUSH DWORD [EBP + 0x08]
+    CALL DWORD [__fRealHandleData] 
+
+    POPAD
+    
+    MOV  ESP, EBP
+    POP  EBP
+    RET  0x04

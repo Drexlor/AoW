@@ -16,10 +16,9 @@ __Table_Kernel32DLL_Begin:
     GetThreadContext:           DD 0x68A7C7D2
     GetTickCount:               DD 0xF791FB23
     GetProcAddress:             DD 0x7C0DFCAA
-    HeapCreate:                 DD 0xB46984E7
-    HeapDestroy:                DD 0xCD92833E
-    HeapFree:                   DD 0x10C32616
     IsDebuggerPresent:          DD 0xA36DC676
+    LocalAlloc:                 DD 0x4C0297FA
+    LocalFree:                  DD 0x5CBAEAF6
     LoadLibraryExA:             DD 0x0753A4FC
     lstrcatA:                   DD 0xCB73463B
     lstrcpyA:                   DD 0xCB9B49FB
@@ -41,62 +40,6 @@ __Table_Kernel32DLL_Begin:
     WriteProcessMemory:         DD 0xD83D6AA1
     WideCharToMultiByte:        DD 0xC1634AF9
 __Table_Kernel32DLL_End:
-
-;////////////////////////////////////////////////////////
-;/// @SEE NTDLL.DLL
-;////////////////////////////////////////////////////////
-__Table_NTDLL_Begin:
-    RtlAllocateHeap:            DD 0x3E192526
-__Table_NTDLL_End:
-
-;////////////////////////////////////////////////////////
-;///!< Heap handler
-;////////////////////////////////////////////////////////
-__pHeap:                        DD 0x90909090
-
-;////////////////////////////////////////////////////////
-;/// \brief Deallocates memory from the local heap
-;///
-;/// \param length The length of memory
-;////////////////////////////////////////////////////////
-%MACRO AllocateMemory 1
-    PUSH %1
-    PUSH 0x00000008
-    PUSH DWORD [__pHeap]
-    CALL DWORD [RtlAllocateHeap]
-%ENDMACRO
-
-;////////////////////////////////////////////////////////
-;/// \brief Deallocates memory from the local heap
-;///
-;/// \param pointer The pointer to the allocated memory
-;////////////////////////////////////////////////////////
-%MACRO DeallocateMemory 1
-    PUSH %1
-    PUSH 0x00000000
-    PUSH DWORD [__pHeap]
-    CALL DWORD [RtlAllocateHeap]
-%ENDMACRO
-
-;////////////////////////////////////////////////////////
-;/// \brief Initialize Heap Enviroment
-;////////////////////////////////////////////////////////
-InitializeEnviroment:
-    PUSH EBP
-    MOV  EBP, ESP
-
-    ;////////////////////////////////////////////////////
-    ;/// Creates heap for our local application
-    ;////////////////////////////////////////////////////
-    PUSH 0x00020000                    ;// EXPAND:  1MB
-    PUSH 0x00020000                    ;// INITIAL: 4KB
-    PUSH 0x00040000                    ;// HEAP_CREATE_ENABLE_EXECUTE
-    CALL DWORD [HeapCreate]            
-    MOV  DWORD [__pHeap], EAX
-
-    MOV  ESP, EBP
-    POP  EBP
-    RET
 
 ;////////////////////////////////////////////////////////
 ;/// \brief Initialize WinAPI Enviroment
@@ -124,14 +67,6 @@ InitializeWinAPI:
     ;////////////////////////////////////////////////////
     PUSH 0xCEF6E822
     CALL GetModuleHandle
-
-    ;////////////////////////////////////////////////////
-    ;/// Populates all function needed from NTDLL.dll
-    ;////////////////////////////////////////////////////
-    PUSH (__Table_NTDLL_End - __Table_NTDLL_Begin) / 0x4
-    PUSH (__Table_NTDLL_Begin - 0x4)
-    PUSH EAX
-    CALL GetFunctionTable
 
     MOV  ESP, EBP
     POP  EBP
@@ -162,7 +97,9 @@ ConvertUnicodeToString:
     MOV  DWORD [EBP - 0x04], EAX
     
     ;// Allocate memory for the UNICODE
-    AllocateMemory EAX
+    PUSH EAX
+    PUSH 0x0040
+    CALL DWORD [LocalAlloc]
     PUSH EAX
 
     ;// Convert UNICODE to CString

@@ -355,7 +355,9 @@ ExecuteCodeOnApplication:
     MOV  DWORD [EBP - 0x08], EAX
 
 .ExecuteCodeOnApplication_FixOpcodeReallocation:
-    AllocateMemory DWORD [EBP + 0x14]
+    PUSH DWORD [EBP + 0x14]
+    PUSH 0x0040
+    CALL DWORD [LocalAlloc]
     MOV  DWORD [EBP - 0x0C], EAX
 
     ;// Copy the code opcodes into the new memory
@@ -380,8 +382,9 @@ ExecuteCodeOnApplication:
     CALL DWORD [WriteProcessMemory]
 
     ;// Free the memory allocated
-    DeallocateMemory DWORD [EBP - 0x0C]
-
+    PUSH DWORD [EBP - 0x0C]
+    CALL DWORD [LocalFree]
+    
 .ExecuteCodeOnApplication_PrepareRemoteThread:
     CALL GetAvailableThreadID
 

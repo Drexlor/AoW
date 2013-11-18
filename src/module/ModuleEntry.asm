@@ -14,10 +14,10 @@
     ;////////////////////////////////////////////////////
     %ifdef FND_MUNDOS_PERDIDOS
         %include 'src/foundation/MundosPerdidosAO/Foundation.asm'
-        %include 'src/foundation/MundosPerdidosAO/FoundationMessage.asm'
+        %include 'src/foundation/MundosPerdidosAO/FoundationValues.asm'
     %elif defined(FND_HISPANO)
         %include 'src/foundation/HispanoAO/Foundation.asm'
-        %include 'src/foundation/HispanoAO/FoundationMessage.asm'
+        %include 'src/foundation/HispanoAO/FoundationValues.asm'
     %endif
     
 ;////////////////////////////////////////////////////
@@ -27,9 +27,9 @@ InitializeModule:
     PUSH EBP
     MOV  EBP, ESP
     
-    ;////////////////////////////////////////////////////
+    ;////////////////////////////////////////////////
     ;/// Initialize SpeedHACK module
-    ;////////////////////////////////////////////////////
+    ;////////////////////////////////////////////////
     CALL InitializeSpeedhackModule
 
     ;////////////////////////////////////////////////
@@ -50,6 +50,12 @@ HandleOutgoingData:
     PUSH EBP
     MOV  EBP, ESP
 
+    ;////////////////////////////////////////////////
+    ;/// Debug the outgoing packet
+    ;////////////////////////////////////////////////
+    PUSH DWORD [EBP + 0x08]
+    CALL DWORD [OutputDebugStringA]
+
     MOV  ESP, EBP
     POP  EBP
     RET  0x04
@@ -63,6 +69,12 @@ HandleIncommingData:
     PUSH EBP
     MOV  EBP, ESP
 
+    ;////////////////////////////////////////////////
+    ;/// Debug the incomming packet
+    ;////////////////////////////////////////////////
+    PUSH DWORD [EBP + 0x08]
+    CALL DWORD [OutputDebugStringA]
+    
     MOV  ESP, EBP
     POP  EBP
     RET  0x04

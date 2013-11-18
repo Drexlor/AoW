@@ -7,7 +7,7 @@
 ;////////////////////////////////////////////////////
 ;///!< The multiply of the speedhack
 ;////////////////////////////////////////////////////
-__dwMultiplier                  DB 0x50
+__dwMultiplier                  DB SPEEDHACK_MAX_INTERVAL
 __dwRealGetTickCount            DD 0x00000000
 __dwFakeGetTickCount            DD 0x00000000
 __dwRealQueryPerfomanceCounter  DD 0x00000000
@@ -41,6 +41,28 @@ InitializeSpeedhackModule:
     MOV  ESP, EBP
     POP  EBP
     RET
+
+;////////////////////////////////////////////////////
+;/// \brief Sets the speedhack modifier.
+;///
+;/// \param modifier The modifier of the speedhack
+;////////////////////////////////////////////////////
+SetSpeedhackModifier:
+    PUSH EBP
+    MOV  EBP, ESP
+
+    MOV  AL, BYTE [EBP + 0x08]
+    CMP  AL, SPEEDHACK_MAX_INTERVAL
+    JLE  .SetSpeedhackModifier_Change
+
+    MOV  AL, SPEEDHACK_MAX_INTERVAL
+
+.SetSpeedhackModifier_Change:
+    MOV  BYTE [__dwMultiplier], AL
+
+    MOV  ESP, EBP
+    POP  EBP
+    RET  0x04
 
 ;////////////////////////////////////////////////////
 ;/// \brief Redirect function of "GetTickCount"

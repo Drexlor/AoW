@@ -59,10 +59,12 @@ InitializeFoundation:
     CALL WriteDetour
     MOV  DWORD [__fRealSendData], EAX
     
+
     ;////////////////////////////////////////////////
     ;/// Redirect "HandleData" for our function
     ;////////////////////////////////////////////////
     ; <TODO>
+
 
     MOV  ESP, EBP
     POP  EBP

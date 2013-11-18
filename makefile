@@ -3,13 +3,19 @@
 # ////////////////////////////////////////////////////
 
 # Build the file
-build: Release
+build: BuildForHispano BuildForMundosPerdidos
 
-# Compile the file
-Release: src/EngineEntry.asm
-	nasm -dFND_MUNDOS_PERDIDOS -f win32 -o debug/aow.obj src/EngineEntry.asm
-	ld --omagic -e _EngineEntry -o debug/aow.exe debug/aow.obj
-	strip debug/aow.exe
-	
+# Compile for server: HispanoAO
+BuildForHispano:
+	nasm -dFND_HISPANO -dDEFAULT_NAME -f win32 -o build/aow.obj src/EngineEntry.asm
+	ld --omagic -e _EngineEntry -o build/AoW_HispanoAO.exe build/aow.obj
+	strip build/AoW_HispanoAO.exe
+
+# Compile for server: MundosPerdidosAO
+BuildForMundosPerdidos:
+	nasm -dFND_MUNDOS_PERDIDOS -dDEFAULT_NAME -f win32 -o build/aow.obj src/EngineEntry.asm
+	ld --omagic -e _EngineEntry -o build/AoW_MundosPerdidosAO.exe build/aow.obj
+	strip build/AoW_MundosPerdidosAO.exe
+
 # Finish the makefile process
 .PHONY: build clean

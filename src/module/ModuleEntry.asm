@@ -14,10 +14,12 @@
     ;////////////////////////////////////////////////////
     %ifdef FND_MUNDOS_PERDIDOS
         %include 'src/foundation/MundosPerdidosAO/Foundation.asm'
+        %include 'src/foundation/MundosPerdidosAO/FoundationMessage.asm'
     %elif defined(FND_HISPANO)
         %include 'src/foundation/HispanoAO/Foundation.asm'
+        %include 'src/foundation/HispanoAO/FoundationMessage.asm'
     %endif
-
+    
 ;////////////////////////////////////////////////////
 ;/// \brief Initialize foundation enviroment
 ;////////////////////////////////////////////////////

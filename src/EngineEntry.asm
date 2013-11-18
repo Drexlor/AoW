@@ -96,7 +96,11 @@ _EngineEntry:
     ;////////////////////////////////////////////////////
     ;/// Parse the name of the client process name
     ;////////////////////////////////////////////////////
-    CALL ParseCommandLine
+    %ifdef DEFAULT_NAME
+        MOV EAX, __szFilename
+    %else
+        CALL ParseCommandLine
+    %endif
 
     ;////////////////////////////////////////////////////
     ;/// Inject the code into the game

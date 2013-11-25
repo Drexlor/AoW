@@ -271,3 +271,31 @@ CopyMemory:
     MOV  ESP, EBP
     POP  EBP
     RET  0x0C
+
+;////////////////////////////////////////////////////////
+;/// \brief Compare memory from source to destination
+;///
+;/// \param source      The source of the memory
+;/// \param destination The destination of the memory
+;/// \param size        The length of the memory
+;////////////////////////////////////////////////////////
+CheckFixedString:
+    PUSH EBP
+    MOV  EBP, ESP
+
+    PUSH ESI
+    PUSH EDI
+    PUSH ECX
+
+    MOV  ESI, DWORD [EBP + 0x08]
+    MOV  EDI, DWORD [EBP + 0x0C]
+    MOV  ECX, DWORD [EBP + 0x10]
+    REP  CMPSB
+
+    POP  ECX
+    POP  EDI
+    POP  ESI
+
+    MOV  ESP, EBP
+    POP  EBP
+    RET  0x0C

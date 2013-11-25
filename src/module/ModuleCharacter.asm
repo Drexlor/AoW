@@ -1,0 +1,47 @@
+;//////////////////////////////////////////////////////////////////////
+;/// This file is subject to the terms and conditions defined in    ///
+;/// file 'LICENSE.txt', which is part of this source code package. ///
+;//////////////////////////////////////////////////////////////////////
+[SEGMENT .text]
+
+;////////////////////////////////////////////////////
+;///!< Flag to determinate if the character was initialized
+;////////////////////////////////////////////////////
+__bCharacterInitialized DB 0x00
+
+;////////////////////////////////////////////////////
+;///!< Character min/max Health/Mana
+;////////////////////////////////////////////////////
+__dwCharacterHealth     DD 0x00000000
+__dwCharacterMaxHealth  DD 0x00000000
+__dwCharacterMana       DD 0x00000000
+__dwCharacterMaxMana    DD 0x00000000
+
+
+;////////////////////////////////////////////////////
+;/// \brief Gets the initial mana and health point
+;///
+;/// \param message The message packet
+;////////////////////////////////////////////////////
+GetInitialCharacterPoint:
+    PUSH EBP
+    MOV  EBP, ESP
+
+    ;////////////////////////////////////////////////
+    ;/// Check if the character was already initialized
+    ;////////////////////////////////////////////////
+    MOV  AL, BYTE [__bCharacterInitialized]
+    TEST AL, AL
+    JNZ  .GetInitialCharacterPoint_Finish
+
+    ;////////////////////////////////////////////////
+    ;/// Call foundation Parse packet for that message
+    ;////////////////////////////////////////////////
+    PUSH DWORD [EBP + 0x08]
+    CALL FoundationParseInitialCharacter
+
+.GetInitialCharacterPoint_Finish:
+
+    MOV  ESP, EBP
+    POP  EBP
+    RET  0x04

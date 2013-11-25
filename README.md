@@ -1,6 +1,12 @@
-AoW
-===========
+## What is AoW?
+AoW is a POC hack for a game called "Argentum Online".
 
+Copyright (c) 2013, Wolftein <<wolftein1@gmail.com>>
+
+## License
+AoW is licensed under [Apache License, Version 2.0][Project License], Please see the `LICENSE.txt` file for details.
+
+## Favorite Quotes
 "The beginnings of the hacker culture as we know it today can be conveniently dated to 1961, the year MIT acquired the first PDP-1."
 
 "I'm still a hacker. I get paid for it now. I never received any monetary gain from the hacking I did before. 
@@ -21,10 +27,3 @@ not what they look like. My crime is that of outsmarting you, something that you
 
 "Out in the field, any connection with home just makes you weaker. It reminds you that you were once civilized, soft; 
 and that can get you killed faster than a bullet through the head."
-
-Ejemplos
-===========
-
-* AoW.exe "Mundos Perdidos 5.0.exe"
-* AoW.exe "ImperiumAO.exe"
-* AoW.exe "HispanoAO.exe"
